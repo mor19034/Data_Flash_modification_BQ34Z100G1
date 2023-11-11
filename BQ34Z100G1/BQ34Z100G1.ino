@@ -22,7 +22,6 @@ void loop() {
   Serial.println("Gas Gauge PACK_CONFIG");
   char* values = bq34z100_g1.Status();
   Serial.println(*values , BIN); 
-  Serial.println(*values +1, BIN); 
   delay(4000); // Esperar un segundo
 }
 
