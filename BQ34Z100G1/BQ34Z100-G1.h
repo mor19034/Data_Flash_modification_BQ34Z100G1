@@ -1,4 +1,4 @@
-// BQ34Z100-G1.h[^1^][1]
+// BQ34Z100-G1.h
 
 #ifndef BQ34Z100_G1_H
 #define BQ34Z100_G1_H
@@ -20,7 +20,7 @@ private:
   void writeControl(uint16_t command);
   uint8_t readByte(uint8_t command);
   uint16_t readWord(uint8_t command);
-  char *Read(uint8_t address, uint8_t offset, uint8_t length); 
+  char *Read(uint8_t address, uint8_t length); 
   void writeByte(uint8_t command, uint8_t data);
   void unseal();
   void enableBlockDataControl();
@@ -35,4 +35,5 @@ private:
 };
 
 #endif // BQ34Z100_G1_H
+
 

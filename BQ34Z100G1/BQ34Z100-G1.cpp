@@ -1,4 +1,4 @@
-// BQ34Z100-G1.cpp[^1^][1]
+// BQ34Z100-G1.cpp
 
 #include "BQ34Z100-G1.h"
 
@@ -40,11 +40,7 @@ uint8_t BQ34Z100_G1::readByte(uint8_t command) {
   Wire.write(command); // Comando a leer
   Wire.endTransmission(false); // Finalizar la transmisión sin liberar el bus
   Wire.requestFrom(0x55, 1); // Solicitar un byte de datos
-  while(Wire.available())
-  {
-    return Wire.read(); // Leer el byte y devolverlo
-  }
-
+  return Wire.read(); // Leer el byte y devolverlo
 }
 
 uint16_t BQ34Z100_G1::readWord(uint8_t command) {
@@ -57,12 +53,12 @@ uint16_t BQ34Z100_G1::readWord(uint8_t command) {
 }
 
 
-char *BQ34Z100_G1::Read(uint8_t address, uint8_t offset, uint8_t length)  //member of bq34z100  
+char *BQ34Z100_G1::Read(uint8_t address, uint8_t length)  //member of bq34z100  
 {
   char *buffer = (char*)malloc (10);;
   uint16_t returnVal = 0; //revisar si se puede de 16 bits    
   Wire.beginTransmission(0x55);
-  Wire.write(address + (offset % 32));
+  Wire.write(address);
   Wire.endTransmission();
   Wire.requestFrom( (int)0x55, (int)length);
   delay(5);
@@ -108,7 +104,7 @@ void BQ34Z100_G1::writeBlockDataChecksum(uint8_t checksum) {
 
 //NO TOCAAAAAR------------------
 uint8_t BQ34Z100_G1::readBlockDataByte(uint8_t offset) {
-  return readByte(BLOCK_DATA + (offset % 32) ); // Leer el byte del offset
+  return readByte(BLOCK_DATA + offset ); // Leer el byte del offset
 }
 //-------------------------------
 uint8_t BQ34Z100_G1::readDataByte(uint8_t offset) {
@@ -116,8 +112,7 @@ uint8_t BQ34Z100_G1::readDataByte(uint8_t offset) {
 }
 
 uint16_t BQ34Z100_G1::readBlockDataWord(uint8_t offset) {
-  return 0;
-  //Read(BLOCK_DATA + offset % 32), 2); // Leer el byte del offset
+  return 0;//Read(BLOCK_DATA + offset, 2); // Leer el byte del offset
 }
 
 void BQ34Z100_G1::writeBlockDataByte(uint8_t offset, uint8_t data) {
@@ -156,8 +151,8 @@ uint16_t BQ34Z100_G1::getNewPackConfiguration() {
   enableBlockDataControl(); // Habilitar el control de la memoria flash de datos
   selectDataFlashClass(PACK_CONFIG_SUBCLASS); // Seleccionar la subclase de configuración de pack
   selectDataFlashBlock(0x00); // Seleccionar el primer bloque de la subclase
-  oldPackConfigMSB = readBlockDataByte(PACK_CONFIG_OFFSET_DEC); // Leer el byte alto de la configuración de pack
-  oldPackConfigMSB | readBlockDataByte(PACK_CONFIG_OFFSET_DEC); //oldPackConfigMSB | VOLTSEL_BIT; // Establecer el bit de selección de voltaje y devolver el nuevo byte alto de la configuración de pack
+  oldPackConfigMSB = readDataByte(PACK_CONFIG_OFFSET); // Leer el byte alto de la configuración de pack
+  oldPackConfigMSB | 256*readDataByte(PACK_CONFIG_OFFSET); //oldPackConfigMSB | VOLTSEL_BIT; // Establecer el bit de selección de voltaje y devolver el nuevo byte alto de la configuración de pack
   return oldPackConfigMSB;
 }
 
@@ -187,7 +182,7 @@ char* BQ34Z100_G1::Status()
   selectDataFlashClass(PACK_CONFIG_SUBCLASS); // Seleccionar la subclase de configuración de paquete
   selectDataFlashBlock(0x00); // Seleccionar el primer bloque de la subclase
   char *PackConfig = (char*)malloc (10);
-  PackConfig = Read(PACK_CONFIG_SUBCLASS, PACK_CONFIG_OFFSET_DEC, 2); // Leer los 2 bytes de la configuración de paquete
+  PackConfig = Read(PACK_CONFIG_OFFSET, 2); // Leer los 2 bytes de la configuración de paquete
   //Serial.println (PackConfig);
   return PackConfig; // Devolver los 16 bits de la configuración de paquete
 }

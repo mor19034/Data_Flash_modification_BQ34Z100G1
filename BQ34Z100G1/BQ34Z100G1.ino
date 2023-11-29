@@ -13,7 +13,7 @@ void setup() {
 
 void loop() {
   uint16_t oldPackConfig = bq34z100_g1.getOldPackConfiguration(); // Leer la configuración de pack antigua
-  //bq34z100_g1.modifyDataFlash(); // Hacer la configuración de pack
+  bq34z100_g1.modifyDataFlash(); // Hacer la configuración de pack
   uint16_t newPackConfig = bq34z100_g1.getNewPackConfiguration(); // Leer la configuración de pack antigua
   Serial.print("Old Pack Configuration: "); // Imprimir el mensaje
   Serial.println(oldPackConfig, BIN); // Imprimir la configuración de pack antigua
@@ -22,7 +22,6 @@ void loop() {
   Serial.println("Gas Gauge PACK_CONFIG");
   char* values = bq34z100_g1.Status();
   Serial.println(*values , BIN); 
+  Serial.println(*values +1, BIN); 
   delay(4000); // Esperar un segundo
 }
-
-
