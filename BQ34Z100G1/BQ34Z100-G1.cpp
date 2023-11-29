@@ -16,7 +16,7 @@
 
 // Definir la subclase y el desplazamiento de la configuración de pack
 #define PACK_CONFIG_SUBCLASS 0x40
-#define PACK_CONFIG_OFFSET 0x00
+#define PACK_CONFIG_OFFSET 0x03
 #define PACK_CONFIG_OFFSET_DEC 0
 
 // Definir el bit de selección de voltaje
@@ -60,6 +60,7 @@ char *BQ34Z100_G1::Read(uint8_t address, uint8_t length)  //member of bq34z100
   Wire.beginTransmission(0x55);
   Wire.write(address);
   Wire.endTransmission();
+  delay(5);
   Wire.requestFrom( (int)0x55, (int)length);
   delay(5);
   
@@ -126,7 +127,7 @@ void BQ34Z100_G1::modifyDataFlash() {
   selectDataFlashBlock(0x00); // Seleccionar el primer bloque de la subclase
   uint8_t oldPackConfigMSB = readBlockDataByte(PACK_CONFIG_OFFSET); // Leer el byte alto de la configuración de pack
   uint8_t oldChecksum = readBlockDataChecksum(); // Leer el checksum del bloque
-  uint8_t newPackConfigMSB = 0x55; //oldPackConfigMSB | VOLTSEL_BIT; // Establecer el bit de selección de voltaje
+  uint8_t newPackConfigMSB = 0x10; //oldPackConfigMSB | VOLTSEL_BIT; // Establecer el bit de selección de voltaje
   writeBlockDataByte(PACK_CONFIG_OFFSET, newPackConfigMSB); // Escribir el nuevo byte alto de la configuración de pack
   uint8_t temp = (255 - oldChecksum - oldPackConfigMSB) % 256; // Calcular el valor temporal
   uint8_t newChecksum = 255 - (temp + newPackConfigMSB) % 256; // Calcular el nuevo checksum
